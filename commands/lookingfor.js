@@ -13,6 +13,7 @@ module.exports = {
         .addRoleOption(option => option
             .setName('group')
             .setDescription('What are you looking for?')
+            .setRequired(true)
         ),
 	async execute(interaction) {
         if (DEBUG) {
@@ -21,6 +22,12 @@ module.exports = {
             log(interaction.guild);
             log(interaction.options.getString('group'));
         }
-		await interaction.reply('hi im still working on this');
+        let group = interaction.options.getRole('group');
+        if (group.id in groups) {
+            await interaction.reply(`${group.name} is in fact a group`);
+        }
+        else {
+            await interaction.reply(`${group.name} is not a group`);
+        }
 	},
 };

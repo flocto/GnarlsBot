@@ -16,7 +16,17 @@ async function listGroups(interaction) {
     await interaction.reply('hi im still working on list');
     let groupNames = [];
     for (let roleId in groups) {
-        groupNames.push(interaction.guild.roles.cache.get(roleId).name);
+        let groupString = interaction.guild.roles.cache.get(roleId).name + " ";
+        if (groupLimits[roleId]) {
+            groupString += `(limit ${groupLimits[roleId]}): `;
+        }
+        else {
+            groupString += '(limit 5): ';
+        }
+        for (let userId of groups[roleId]) {
+            groupString += interaction.guild.members.cache.get(userId).displayName + ', ';
+        }
+        groupNames.push(groupString);
     }
     await interaction.followUp(groupNames.join('\n')); // pray this works
 }
