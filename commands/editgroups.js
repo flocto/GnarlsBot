@@ -94,7 +94,7 @@ module.exports = {
         switch (interaction.options.getSubcommand()) {
             case "add":
                 if (roleId in groups) {
-                    await interaction.reply("This role already exists!");
+                    await interaction.reply("This group already exists!");
                     return;
                 }
                 groups[roleId] = new Group(roleId, limit);
@@ -106,7 +106,7 @@ module.exports = {
                 break;
             case "remove":
                 if (!(roleId in groups)) {
-                    await interaction.reply("This role does not exist!");
+                    await interaction.reply("This group does not exist!");
                     return;
                 }
                 delete groups[roleId];
@@ -118,7 +118,7 @@ module.exports = {
                 break;
             case "clear":
                 if (!(roleId in groups)) {
-                    await interaction.reply("This role does not exist!");
+                    await interaction.reply("This group does not exist!");
                     return;
                 }
                 groups[roleId].clear();
@@ -130,7 +130,7 @@ module.exports = {
                 break;
             case "setlimit":
                 if (!(roleId in groups)) {
-                    await interaction.reply("This role does not exist!");
+                    await interaction.reply("This group does not exist!");
                     return;
                 }
                 groups[roleId].setLimit(limit);
