@@ -23,3 +23,7 @@ The bot is still in progress, and documentation may change at any time.
     - Clears all members from a group.
   - `/editgroups setlimit <group> <limit>`
     - Sets the limit of a group, in case you want to change it.
+
+## Deployment
+Deploying this bot yourself should be simple, just make your own `config.json` based on the example, and run `docker compose up -d`. 
+Assuming nothing goes wrong, you should be good to go!
