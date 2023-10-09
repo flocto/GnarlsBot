@@ -1,0 +1,10 @@
+{
+    "token": "<discord token>",
+    "clientId": "<client id>",
+    "guildIds": [
+        "<gid 1>",
+        "<gid 2>",
+        "<gid 3>"
+    ],
+    "DEBUG": true
+}

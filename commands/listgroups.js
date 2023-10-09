@@ -38,19 +38,19 @@ module.exports = {
             log(interaction.options);
         }
 
-        let pages = [];
+        let allGroups = [];
         for (let roleId in groups) {
-            pages.push(buildEmbed(interaction, groups[roleId]));
+            allGroups.push(groups[roleId]);
         }
-        if (!pages.length) {
+        if (!allGroups.length) {
             await interaction.reply("No current groups!");
             return;
         }
 
         let currentPage = 0;
-        let onePage = pages.length == 1;
+        let onePage = allGroups.length == 1;
         let embedMessage = await interaction.reply({
-            embeds: [pages[currentPage]],
+            embeds: [buildEmbed(interaction, allGroups[currentPage])],
             components: onePage
                 ? []
                 : [new ActionRowBuilder().addComponents([forwardButton])],
@@ -60,7 +60,7 @@ module.exports = {
         }
 
         // collector for buttons
-        const collector = embedMessage.createMessageComponentCollector({
+        let collector = embedMessage.createMessageComponentCollector({
             time: 60000,
         });
 
@@ -70,11 +70,11 @@ module.exports = {
             i.customId === "next" ? currentPage++ : currentPage--;
 
             await i.update({
-                embeds: [pages[currentPage]],
+                embeds: [buildEmbed(interaction, allGroups[currentPage])],
                 components: [
                     new ActionRowBuilder().addComponents([
                         ...(currentPage === 0 ? [] : [backButton]),
-                        ...(currentPage === pages.length - 1
+                        ...(currentPage === allGroups.length - 1
                             ? []
                             : [forwardButton]),
                     ]),

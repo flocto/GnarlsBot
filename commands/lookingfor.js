@@ -15,7 +15,7 @@ function log(s) {
 // TODO: make this process use ephemeral embeds where users can click on buttons to join/leave
 // if the group fills via button, the embed is destroyed and the full ping message is sent like before
 const joinButton = new ButtonBuilder()
-    .setStyle(ButtonStyle.Primary)
+    .setStyle(ButtonStyle.Success)
     .setLabel("Join Group")
     .setEmoji("✅")
     .setCustomId("join");
@@ -25,6 +25,8 @@ const leaveButton = new ButtonBuilder()
     .setLabel("Leave Group")
     .setEmoji("❌")
     .setCustomId("leave");
+
+const buttons = new ActionRowBuilder().addComponents([joinButton, leaveButton]);
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -54,29 +56,51 @@ module.exports = {
         }
 
         let group = groups[role.id];
-        if (group.isMember(interaction.member.id)) {
-            group.removeMember(interaction.member.id);
-            await interaction.reply({
-                content: `You were already in ${role.name}, so you've been removed!`,
-                embeds: [buildEmbed(interaction, group)],
-                ephemeral: true,
-            });
-        }
+        let embed = buildEmbed(interaction, group);
 
-        group.addMember(interaction.member.id);
-        await interaction.reply({
-            content: `Successfully added to ${role.name}!`,
-            embeds: [buildEmbed(interaction, group)],
+        let embedMessage = await interaction.reply({
+            embeds: [embed],
+            components: [buttons],
             ephemeral: true,
         });
 
-        // check if full, if so ping all and clear group
-        if (group.isFull()) {
-            let ping = group.members.map((id) => `<@${id}>`).join(",");
-            await interaction.followUp({
-                content: `${ping}, ${role.name} is now full! Have fun!\nClearing the group...`,
+        let collector = embedMessage.createMessageComponentCollector({
+            time: 60000,
+        });
+
+        collector.on("collect", async (i) => {
+            if (
+                i.customId === "join" &&
+                !group.isMember(interaction.member.id)
+            ) {
+                group.addMember(interaction.member.id);
+                // check if full, if so ping all and clear group
+                if (group.isFull()) {
+                    let ping = group.members.map((id) => `<@${id}>`).join(",");
+                    await i.channel.send({
+                        content: `${ping}, ${role.name} is now full! Have fun!`,
+                    });
+                    await i.update({
+                        content: "Group filled!",
+                        embeds: [],
+                        components: [],
+                        ephemeral: true,
+                    });
+                    group.clear();
+                    return;
+                }
+            } else if (
+                i.customId === "leave" &&
+                group.isMember(interaction.member.id)
+            ) {
+                group.removeMember(interaction.member.id);
+            }
+
+            await i.update({
+                embeds: [buildEmbed(interaction, group)],
+                components: [buttons],
+                ephemeral: true,
             });
-            group.clear();
-        }
+        });
     },
 };
