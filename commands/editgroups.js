@@ -35,6 +35,11 @@ module.exports = {
                         )
                         .setMinValue(1)
                 )
+                .addStringOption((option) =>
+                    option
+                        .setName("name")
+                        .setDescription("What's the name of this group?")
+                )
         )
         .addSubcommand((subcommand) =>
             subcommand
@@ -79,31 +84,32 @@ module.exports = {
                         .setMinValue(1)
                         .setRequired(true)
                 )
-                .addStringOption((option) =>
-                    option
-                        .setName("name")
-                        .setDescription("What's the name of this group?")
-                )
         )
         .setDefaultMemberPermissions(0), // admins only
     async execute(interaction) {
+        let roleId = interaction.options.getRole("role").id;
+        let limit = interaction.options.getInteger("limit") ?? 5;
+        let name =
+            interaction.options.getString("name") ??
+            interaction.options.getRole("role").name;
+
         if (DEBUG) {
             log(interaction.user);
             log(interaction.member);
             log(interaction.guild);
             log(interaction.options);
+            log(roleId);
+            log(limit);
+            log(name);
         }
 
-        let roleId = interaction.options.getRole("role").id;
-        let limit = interaction.options.getInteger("limit") ?? 5;
-        let name = interaction.options.getString("name") ?? interaction.options.getRole("role").name;
         switch (interaction.options.getSubcommand()) {
             case "add":
                 if (roleId in groups) {
                     await interaction.reply("This group already exists!");
                     return;
                 }
-                groups[roleId] = new Group(roleId, limit, name);
+                groups[roleId] = new Group(roleId, name, limit);
                 await interaction.reply(
                     `Successfully added ${
                         interaction.options.getRole("role").name
