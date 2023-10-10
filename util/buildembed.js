@@ -10,9 +10,9 @@ function buildEmbed(interaction, group) {
             iconURL:
                 "https://cdn.discordapp.com/avatars/1156043632634249217/b5d235fde4551f7309a4b3fe6108c8f1.webp?size=60",
         })
-        .setTitle(interaction.guild.roles.cache.get(group.roleId).name)
+        .setTitle(group.name)
         .setDescription(
-            `Currently ${group.members.length}/${group.limit} members`
+            `Role: <@&${group.roleId}>\nCurrently ${group.members.length}/${group.limit} members`
         )
         .setFooter({
             text: `Group ID: ${group.roleId}`,

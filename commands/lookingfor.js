@@ -12,7 +12,6 @@ function log(s) {
     console.log(`${new Date()} lookingfor.js: ${s}`);
 }
 
-// TODO: make this process use ephemeral embeds where users can click on buttons to join/leave
 // if the group fills via button, the embed is destroyed and the full ping message is sent like before
 const joinButton = new ButtonBuilder()
     .setStyle(ButtonStyle.Success)
@@ -50,7 +49,6 @@ module.exports = {
         if (!(role.id in groups)) {
             await interaction.reply({
                 content: `There is no group for ${role.name}!`,
-                ephemeral: true,
             });
             return;
         }
@@ -61,19 +59,18 @@ module.exports = {
         let embedMessage = await interaction.reply({
             embeds: [embed],
             components: [buttons],
-            ephemeral: true,
         });
 
         let collector = embedMessage.createMessageComponentCollector({
-            time: 60000,
+            time: 60000, // 1 minute
         });
 
         collector.on("collect", async (i) => {
             if (
                 i.customId === "join" &&
-                !group.isMember(interaction.member.id)
+                !group.isMember(i.member.id) 
             ) {
-                group.addMember(interaction.member.id);
+                group.addMember(i.member.id);
                 // check if full, if so ping all and clear group
                 if (group.isFull()) {
                     let ping = group.members.map((id) => `<@${id}>`).join(",");
@@ -84,22 +81,20 @@ module.exports = {
                         content: "Group filled!",
                         embeds: [],
                         components: [],
-                        ephemeral: true,
                     });
                     group.clear();
                     return;
                 }
             } else if (
                 i.customId === "leave" &&
-                group.isMember(interaction.member.id)
+                group.isMember(i.member.id)
             ) {
-                group.removeMember(interaction.member.id);
+                group.removeMember(i.member.id);
             }
 
             await i.update({
                 embeds: [buildEmbed(interaction, group)],
                 components: [buttons],
-                ephemeral: true,
             });
         });
     },

@@ -1,6 +1,6 @@
 {
   "name": "gnarlsbot",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "discord bot for tnsfps",
   "main": "index.js",
   "scripts": {

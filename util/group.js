@@ -1,11 +1,12 @@
 // boo! its OOP
 class Group {
-    constructor(role, limit) {
+    constructor(role, name, limit) { // default limit is 5
         this.members = []; // i dont want to both with sets/maps for now, this is easier since each group isn't > 20 members max anyway
         this.createdAt = new Date();
         this.modifiedAt = new Date();
         this.limit = limit;
         this.roleId = role;
+        this.name = name;
     }
 
     addMember(member) {
